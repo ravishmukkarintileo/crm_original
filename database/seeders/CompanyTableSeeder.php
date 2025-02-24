@@ -29,8 +29,8 @@ class CompanyTableSeeder extends Seeder
         $enLang = Lang::where('key', 'en')->first();
 
         $adminCompany = new Company();
-        $adminCompany->name = 'Lead Pro';
-        $adminCompany->short_name = 'LeadPro';
+        $adminCompany->name = 'PolicyKaro';
+        $adminCompany->short_name = 'PolicyKaro';
         $adminCompany->email = 'company@example.com';
         $adminCompany->phone = $faker->e164PhoneNumber();
         $adminCompany->address = '7 street, city, state, 762782';
