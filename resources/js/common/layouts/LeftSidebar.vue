@@ -87,54 +87,6 @@
                         <CopyrightCircleOutlined />
                         <span>{{ $t("menu.products") }}</span>
                     </a-menu-item>
-                    <!-- <a-sub-menu
-                        key="expense_manager"
-                        v-if="
-                            (permsArray.includes('expense_categories_view') ||
-                                permsArray.includes('expenses_view') ||
-                                permsArray.includes('admin')) &&
-                            willSubscriptionModuleVisible('expense')
-                        "
-                    >
-                        <template #title>
-                            <span>
-                                <WalletOutlined />
-                                <span>{{ $t("menu.expense_manager") }}</span>
-                            </span>
-                        </template>
-                        <a-menu-item
-                            @click="
-                                () => {
-                                    menuSelected();
-                                    $router.push({
-                                        name: 'admin.expense_categories.index',
-                                    });
-                                }
-                            "
-                            key="expense_categories"
-                            v-if="
-                                permsArray.includes('expense_categories_view') ||
-                                permsArray.includes('admin')
-                            "
-                        >
-                            {{ $t("menu.expense_categories") }}
-                        </a-menu-item>
-                        <a-menu-item
-                            @click="
-                                () => {
-                                    menuSelected();
-                                    $router.push({ name: 'admin.expenses.index' });
-                                }
-                            "
-                            key="expenses"
-                            v-if="
-                                permsArray.includes('expenses_view') ||
-                                permsArray.includes('admin')
-                            "
-                        >
-                            {{ $t("menu.expenses") }}
-                        </a-menu-item>
-                    </a-sub-menu> -->
 
                     <LeftSideBarMainHeading
                         v-if="
