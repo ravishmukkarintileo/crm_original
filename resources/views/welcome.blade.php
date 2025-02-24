@@ -15,7 +15,7 @@
             <div class="loading-app-container">
                 <div class="ant-result ant-result-info">
                     <div class="ant-result-icon">
-                        <img src="{{ $loadingImage }}"  style="width: 150px;">
+                        PolicyKaro
                     </div>
                     @if(isset($loadingLangMessageLang))
                     <div class="ant-result-title">
