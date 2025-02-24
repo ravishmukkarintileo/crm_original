@@ -5,7 +5,7 @@
     <p class="paragraph" style="text-align: center;">{{ session('message')['message'] }}</p>
 	<div style="text-align: center">
 		<span>Login Credentials:</span> <br />
-		<span>Email: <b>@if(app_type() == 'saas') superadmin@example.com @else admin@example.com @endif</b></span>
+		<span>Email: <b>@if(app_type() == 'saas') superadminsssssssss@example.com @else admin@example.com @endif</b></span>
 		<p>Password: <b>12345678</b></p>
 	</div>
     <div class="buttons">
