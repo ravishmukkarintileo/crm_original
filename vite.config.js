@@ -19,26 +19,12 @@ export default defineConfig({
         }),
         splitVendorChunkPlugin(),
     ],
-    build: {
-        // chunkSizeWarningLimit: 900000,
-        // rollupOptions: {
-        //     output: {
-        //         entryFileNames: `assets/[name].js`,
-        //         chunkFileNames: function (file) {
-        //             return `assets/[name].js`;
-        //         },
-        //         assetFileNames: (assetInfo) => {
-        //             return `assets/[name][extname]`;
-        //         },
-        //         manualChunks: {
-        //             ant_design_vue: ['ant-design-vue']
-        //         }
-        //     }
-        // }
-    },
     server: {
+        host: '0.0.0.0',  // Allows access from any device
+        port: 5173,       // Ensure the port is open in your firewall
+        strictPort: true,
         hmr: {
-            host: 'localhost',
+            host: '194.238.19.210', // Use your server's IP
         },
     },
 });
