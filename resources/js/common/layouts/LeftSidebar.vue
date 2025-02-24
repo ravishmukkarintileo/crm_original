@@ -28,7 +28,7 @@
         </div>
         <div v-else>
 
-            <h1 class="text-danger" style="color: blue;text-align: center;font-size: 30px;margin: 1rem auto;">PolicyKro</h1>
+            <h1 class="text-danger" style="color: blue;text-align: center;font-size: 30px;margin: 1rem auto;">PolicyKaro</h1>
             <CloseOutlined
                 v-if="innerWidth <= 991"
                 :style="{

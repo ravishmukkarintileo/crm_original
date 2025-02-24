@@ -153,7 +153,6 @@ class ApiController extends \Illuminate\Routing\Controller
 	{
 		$this->validate();
 
-        dd('d');
 
 		$results = $this->parseRequest()
 			->addIncludes()
