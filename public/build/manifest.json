@@ -1,0 +1,55 @@
+{
+  "_vendor-a91b8582.js": {
+    "css": [
+      "assets/vendor-ad46f743.css"
+    ],
+    "file": "assets/vendor-a91b8582.js"
+  },
+  "resources/js/app.css": {
+    "file": "assets/app-eba84ee8.css",
+    "src": "resources/js/app.css"
+  },
+  "resources/js/app.js": {
+    "css": [
+      "assets/app-eba84ee8.css"
+    ],
+    "dynamicImports": [
+      "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue"
+    ],
+    "file": "assets/app-4550146a.js",
+    "imports": [
+      "_vendor-a91b8582.js"
+    ],
+    "isEntry": true,
+    "src": "resources/js/app.js"
+  },
+  "resources/js/common/layouts/Admin.css": {
+    "file": "assets/Admin-14aea5fe.css",
+    "src": "resources/js/common/layouts/Admin.css"
+  },
+  "resources/js/common/layouts/Admin.vue": {
+    "css": [
+      "assets/Admin-14aea5fe.css"
+    ],
+    "file": "assets/Admin-bb3356a6.js",
+    "imports": [
+      "resources/js/app.js",
+      "_vendor-a91b8582.js"
+    ],
+    "isDynamicEntry": true,
+    "src": "resources/js/common/layouts/Admin.vue"
+  },
+  "vendor.css": {
+    "file": "assets/vendor-ad46f743.css",
+    "src": "vendor.css"
+  }
+}
