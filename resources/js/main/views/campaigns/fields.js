@@ -2,7 +2,7 @@ import { onMounted, ref, computed } from "vue";
 import { useI18n } from "vue-i18n";
 
 const fields = () => {
-    const url = "campaigns?fields=id,xid,name,reference_prefix,allow_reference_prefix,remaining_leads,total_leads,campaignUsers{id,xid,user_id,x_user_id,campaign_id,x_campaign_id},campaignUsers:user{id,xid,name,profile_image,profile_image_url},email_template_id,x_email_template_id,emailTemplate{id,xid,name},form_id,x_form_id,form{id,xid,name,form_fields},detail_fields,last_action_by,x_last_action_by,lastActioner{id,xid,name},completed_by,x_completed_by,completedBy{id,xid,name},started_on,completed_on,upcoming_lead_action";
+    const url = "campaigns?fields=id,xid,name,reference_prefix,allow_reference_prefix,remaining_leads,total_leads,branch_id,campaignUsers{id,xid,user_id,x_user_id,campaign_id,x_campaign_id},campaignUsers:user{id,xid,name,profile_image,profile_image_url},email_template_id,x_email_template_id,emailTemplate{id,xid,name},form_id,x_form_id,form{id,xid,name,form_fields},detail_fields,last_action_by,x_last_action_by,lastActioner{id,xid,name},completed_by,x_completed_by,completedBy{id,xid,name},started_on,completed_on,upcoming_lead_action";
     const addEditUrl = "campaigns";
     const hashableColumns = ['form_id', 'email_template_id'];
     const { t } = useI18n();
@@ -20,6 +20,7 @@ const fields = () => {
         current_step: 0,
         detail_fields: [],
         import_lead_fields: [],
+        branch_id : undefined
     };
 
     const columns = computed(() => {

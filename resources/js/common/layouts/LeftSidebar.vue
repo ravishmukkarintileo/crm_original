@@ -26,23 +26,8 @@
             />
         </div>
         <div v-else>
-            <img
-                :style="{
-                    width: '150px',
-                    height: '53px',
-                    paddingLeft: appSetting.rtl ? '0px' : '30px',
-                    paddingRight: appSetting.rtl ? '30px' : '0px',
-                    paddingTop: '5px',
-                    paddingBottom: '20px',
-                    marginLeft: appSetting.rtl ? '0px' : '10px',
-                    marginRight: appSetting.rtl ? '10px' : '0px',
-                }"
-                :src="
-                    appSetting.left_sidebar_theme == 'dark'
-                        ? appSetting.dark_logo_url
-                        : appSetting.light_logo_url
-                "
-            />
+
+            <h1 class="text-danger" style="color: blue;text-align: center;font-size: 30px;margin: 1rem auto;">PolicyKro</h1>
             <CloseOutlined
                 v-if="innerWidth <= 991"
                 :style="{
@@ -101,7 +86,7 @@
                         <CopyrightCircleOutlined />
                         <span>{{ $t("menu.products") }}</span>
                     </a-menu-item>
-                    <a-sub-menu
+                    <!-- <a-sub-menu
                         key="expense_manager"
                         v-if="
                             (permsArray.includes('expense_categories_view') ||
@@ -148,7 +133,7 @@
                         >
                             {{ $t("menu.expenses") }}
                         </a-menu-item>
-                    </a-sub-menu>
+                    </a-sub-menu> -->
 
                     <LeftSideBarMainHeading
                         v-if="
@@ -178,6 +163,24 @@
                         <SolutionOutlined />
                         <span>{{ $t("menu.staff_members") }}</span>
                     </a-menu-item>
+
+                    <a-menu-item
+                        v-if="
+                            permsArray.includes('branch_view') ||
+                            permsArray.includes('admin')
+                        "
+                        @click="
+                            () => {
+                                menuSelected();
+                                $router.push({ name: 'admin.branch.index' });
+                            }
+                        "
+                        key="branches"
+                    >
+                        <SolutionOutlined />
+                        <span>Branch</span>
+                    </a-menu-item>
+
 
                     <a-sub-menu
                         v-if="

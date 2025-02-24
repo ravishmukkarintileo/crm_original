@@ -21,7 +21,7 @@ class Lead extends BaseModel
 
     protected $appends = ['xid', 'x_company_id', 'x_campaign_id', 'x_first_action_by', 'x_last_action_by', 'x_lead_follow_up_id', 'x_salesman_booking_id'];
 
-    protected $filterable = ['reference_number', 'campaign_id', 'lead_status'];
+    protected $filterable = ['reference_number', 'campaign_id', 'lead_status','expiry_date'];
 
     protected $hashableGetterFunctions = [
         'getXCompanyIdAttribute' => 'company_id',

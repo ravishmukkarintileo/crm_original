@@ -351,6 +351,8 @@ class Common
     {
         $loggedUser = user();
         $request = request();
+
+
         $callLogXId = $request->call_log_id;
         $callLogId = Common::getIdFromHash($callLogXId);
         $timeTaken = $request->call_time;
@@ -373,21 +375,55 @@ class Common
         // Recalculate Time Taken in Lead
         // And insert it in lead
         $recalculateLeadTime = LeadLog::where('lead_id', $lead->id)
-            // ->where('user_id', '=', $loggedUser->id)
-            ->where('log_type', '=', 'call_log')
-            ->sum('time_taken');
+        // ->where('user_id', '=', $loggedUser->id)
+        ->where('log_type', '=', 'call_log')
+        ->sum('time_taken');
 
         if ($request->has('lead_data')) {
-            $lead->lead_data = $request->lead_data;
+            if($loggedUser->role_id != 1){
+
+                // Get existing lead data
+                $existingLeadData = $lead->lead_data ?? [];
+
+                // Convert existing data into an associative array for quick lookup
+                $existingLeadDataAssoc = [];
+                foreach ($existingLeadData as $field) {
+                    $existingLeadDataAssoc[$field["field_name"]] = $field;
+                }
+
+                // Process the new lead data
+                $updatedFields = array_map(function ($field) use ($existingLeadDataAssoc) {
+                    // Keep previous values for "Name", "Mobile no", "Vehicle No"
+                    if (in_array($field["field_name"], ["Name", "Mobile no", "Vehicle No"])) {
+                        return $existingLeadDataAssoc[$field["field_name"]] ?? $field;
+                    }
+                    return $field; // Update other fields
+                }, $request->lead_data);
+
+                // Update lead data
+                $lead->lead_data = array_values($updatedFields);
+
+
+            }else{
+                $lead->lead_data = $request->lead_data;
+            }
         }
+
         if ($request->has('reference_number')) {
             $lead->reference_number = $request->reference_number;
         }
         if ($request->has('lead_status')) {
             $lead->lead_status = $request->has('lead_status') && $request->lead_status != '' ? $request->lead_status : null;
         }
+        if ($request->has('sub_lead_status')) {
+            $lead->sub_lead_status = $request->has('sub_lead_status') && $request->sub_lead_status != '' ? $request->sub_lead_status : null;
+        }
         $lead->last_action_by = $loggedUser->id;
         $lead->time_taken = $recalculateLeadTime;
+
+        $lead->expiry_date = $request->expiry_date;
+
+
         $lead->save();
 
         // Updating Last action by for campaign

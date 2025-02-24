@@ -1,12 +1,26 @@
 <template>
     <a-layout-header :style="{ padding: '0 16px', background: 'white' }">
         <a-row>
-            <a-col :span="4">
+            <a-col :span="1">
                 <a-space>
                     <MenuOutlined class="trigger" @click="showHideMenu" />
                 </a-space>
             </a-col>
-            <a-col :span="20">
+            <a-col :span="21" style="overflow: hidden; white-space: nowrap; padding:6px auto;">
+
+                    <h2 style="color: red; font-size: 16px; margin: 0;  text-overflow: ellipsis; overflow: hidden;">
+                    <b>{{ formData.head }}</b>
+                    </h2>
+                </a-col>
+
+                <!-- <a-col :span="5" style="overflow: hidden; white-space: nowrap; padding:6px auto">
+                    <h2 style="color: red; font-size: 14px; margin: 0; text-overflow: ellipsis; overflow: hidden;">
+                    <b>{{ formData.sub_head }}</b>
+                    </h2>
+                </a-col> -->
+
+
+            <a-col :span="2">
                 <HeaderRightIcons>
                     <a-space>
                         <!-- <template v-if="appSetting.shortcut_menus != 'bottom'">
@@ -40,6 +54,9 @@
                             </template>
                         </a-dropdown>
                         <a-divider type="vertical" />
+
+
+
                         <a-button
                             type="link"
                             @click="
@@ -72,6 +89,8 @@ import MenuMode from "./MenuMode.vue";
 import AffixButton from "./AffixButton.vue";
 
 export default {
+
+
     components: {
         MenuOutlined,
         DownOutlined,
@@ -83,6 +102,8 @@ export default {
     setup(props, { emit }) {
         const { user, appSetting, permsArray, menuCollapsed } = common();
         const store = useStore();
+        const formData = ref({});
+
         const selectedLang = ref(store.state.auth.lang);
         const { locale, t } = useI18n();
         const themeMode = ref(window.config.theme_mode == "light" ? false : true);
@@ -95,6 +116,22 @@ export default {
             selectedLang.value = lang;
             locale.value = lang;
         };
+
+        onMounted(() => {
+
+            const bannerPromise = axiosAdmin.get("banner");
+
+            Promise.all([bannerPromise]).then(
+                ([bannerPromise]) => {
+                    console.log(bannerPromise.data,'sssssss');
+                    formData.value = bannerPromise.data;
+                    setFormData();
+                }
+            );
+
+
+
+        });
 
         const showHideMenu = () => {
             store.commit("auth/updateMenuCollapsed", !menuCollapsed.value);
@@ -130,7 +167,7 @@ export default {
             langs: computed(() => store.state.auth.allLangs),
 
             user,
-
+            formData,
             themeMode,
             themeModeChanged,
             themeModeLoading,

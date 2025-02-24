@@ -56,6 +56,32 @@
                     </a-col>
                 </a-row>
 
+                <a-row :gutter="16" >
+                    <a-col :xs="24" :sm="24" :md="24" :lg="24">
+                        <a-form-item
+                            label="Branch Name"
+                            name="branch_id"
+
+                            class="required"
+                        >
+                            <a-select
+                                v-model:value="formData.branch_id"
+                                :placeholder="$t('common.select_default_text', [$t('branch.name')])"
+                                :allowClear="true"
+                                style="width: 100%"
+                            >
+                                <a-select-option
+                                    v-for="branch in branches"
+                                    :key="branch.id"
+                                    :value="branch.id"
+                                >
+                                    {{ branch.name }}
+                                </a-select-option>
+                            </a-select>
+                        </a-form-item>
+                    </a-col>
+                   </a-row>
+
                 <a-row :gutter="16">
                     <a-col :xs="24" :sm="24" :md="24" :lg="24">
                         <a-form-item
@@ -89,6 +115,7 @@
                         </a-form-item>
                     </a-col>
                 </a-row>
+
 
                 <a-row :gutter="16">
                     <a-col :xs="24" :sm="24" :md="12" :lg="12">
@@ -401,6 +428,7 @@ export default defineComponent({
         EmailTemplateAddButton,
     },
     setup(props, { emit }) {
+
         const currentStep = ref(0);
         const {
             addEditFileRequestAdmin,
@@ -418,19 +446,34 @@ export default defineComponent({
         const importLeadColumns = ref(undefined);
         const selectedFormFields = ref([]);
 
+
+        const branches = ref([]);
+        const branchUrl = "branches";
+
         onMounted(() => {
             const staffMemberPromise = axiosAdmin.get(staffMembersUrl);
             const formsPromise = axiosAdmin.get(formUrl);
             const emailTemplatesPromise = axiosAdmin.get(emailTemplateUrl);
+            const branchesPromise = axiosAdmin.get(branchUrl);
 
-            Promise.all([staffMemberPromise, formsPromise, emailTemplatesPromise]).then(
-                ([staffMemberResponse, formsResponse, emailTemplatesResponse]) => {
+            Promise.all([staffMemberPromise, formsPromise, emailTemplatesPromise,branchesPromise]).then(
+                ([staffMemberResponse, formsResponse, emailTemplatesResponse,branchesResponse]) => {
                     allStaffMembers.value = staffMemberResponse.data;
                     allForms.value = formsResponse.data;
                     allEmailTemplates.value = emailTemplatesResponse.data.email_templates;
+
+                    branches.value = branchesResponse.data;
+
                 }
             );
         });
+
+        const branchAdded = () => {
+            axiosAdmin.get(branchUrl).then((response) => {
+
+                branches.value = response.data;
+            });
+        };
 
         const removeDetailField = (item) => {
             let index = props.formData.detail_fields.indexOf(item);
@@ -484,7 +527,9 @@ export default defineComponent({
                 newFormData.file = leadFile.value;
             }
 
+
             newFormData.import_lead_fields = importLeadColumns.value;
+
 
             addEditFileRequestAdmin({
                 url: props.url,
@@ -606,8 +651,9 @@ export default defineComponent({
             formAdded,
             emailTemplateAdded,
             goBack,
+            branches,
             submitForm,
-
+            branchAdded,
             removeDetailField,
             addDetailField,
             addFieldsButtonStatus,

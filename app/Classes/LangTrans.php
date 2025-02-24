@@ -158,6 +158,7 @@ class LangTrans
             'total_follow_up' => 'Total Follow Up',
             'total_duration' => 'Total Duration',
             'active_actioned_campaigns' => 'Active Actioned Campaigns',
+            'active_actioned_campaigns' => 'Active Actioned Campaigns',
         ],
         'user' => [
             'add' => 'Add New Staff Member',

@@ -313,60 +313,66 @@
                                 style="width: 100%"
                                 @change="setUrlData"
                             >
-                                <a-select-option key="interested" value="interested">
-                                    {{ $t("lead.interested") }}
-                                </a-select-option>
-                                <a-select-option
-                                    key="not_interested"
-                                    value="not_interested"
-                                >
-                                    {{ $t("lead.not_interested") }}
-                                </a-select-option>
-                                <a-select-option key="unreachable" value="unreachable">
-                                    {{ $t("lead.unreachable") }}
-                                </a-select-option>
+
+                                    <a-select-option
+                                        key="Fresh"
+                                        value ="Fresh"
+                                    >
+                                        Fresh
+                                    </a-select-option>
+                                    <a-select-option
+                                        key="converted"
+                                        value ="Converted"
+                                    >
+                                        Converted
+                                    </a-select-option>
+                                    <a-select-option
+                                        key="Follow-up"
+                                        value ="Follow-up"
+                                    >
+                                       Follow-up
+                                    </a-select-option>
+
+
+                                    <a-select-option
+                                        key="Callback"
+                                        value ="Callback"
+                                    >
+                                    Callback
+
+                                    </a-select-option>
+
+                                    <a-select-option
+                                        key="Yet to Contact"
+                                        value ="Yet to Contact"
+                                    >
+                                        Yet to Contact
+                                    </a-select-option>
+
+                                    <a-select-option
+                                        key="Lost"
+                                        value ="Lost"
+                                    >
+                                        Lost
+                                    </a-select-option>
+
                             </a-select>
                         </a-col>
-                        <template v-if="campaignFormFields.length != 0">
-                            <a-col :xs="24" :sm="24" :md="6" :lg="6" :xl="6">
-                                <a-select
-                                    v-model:value="searchFieldName"
-                                    :placeholder="
-                                        $t('common.select_default_text', [
-                                            $t('lead.search_by'),
-                                        ])
-                                    "
-                                    :allowClear="true"
-                                    style="width: 100%"
-                                    optionFilterProp="title"
-                                    show-search
-                                    @change="searchFieldChanged"
-                                    :disabled="campaignFormFields.length == 0"
-                                >
-                                    <a-select-option
-                                        v-for="campaignFormField in campaignFormFields"
-                                        :key="campaignFormField.id"
-                                        :title="campaignFormField.name"
-                                        :value="campaignFormField.id"
-                                        :formField="campaignFormField"
-                                    >
-                                        {{ campaignFormField.name }}
-                                    </a-select-option>
-                                </a-select>
-                            </a-col>
-                            <a-col :xs="24" :sm="24" :md="6" :lg="6" :xl="6">
-                                <a-input
-                                    v-model:value="extraFilters.lead_field_value"
-                                    :placeholder="
-                                        $t('common.placeholder_default_text', [
-                                            $t('lead.search_value'),
-                                        ])
-                                    "
-                                    v-on:keyup="setUrlData"
-                                    :disabled="searchFieldName == undefined"
-                                />
-                            </a-col>
-                        </template>
+
+                        <a-col :xs="24" :sm="24" :md="8" :lg="8" :xl="6">
+                            <DateRangePicker
+                                @dateTimeChanged="
+                                    (changedDateTime) => {
+                                        extraFilters.dates = changedDateTime;
+                                        setUrlData();
+                                    }
+                                "
+                            />
+                        </a-col>
+
+
+
+
                     </a-row>
 
                     <a-row class="mt-20">
@@ -524,6 +530,7 @@ import fields from "./fields";
 import AdminPageHeader from "../../../../common/layouts/AdminPageHeader.vue";
 import UpdateStatus from "./UpdateStatus.vue";
 import StateWidget from "../../../../common/components/common/card/StateWidget.vue";
+import DateRangePicker from "../../../../common/components/common/calendar/DateRangePicker.vue";
 
 export default {
     components: {
@@ -543,7 +550,7 @@ export default {
         ApartmentOutlined,
         MobileOutlined,
         ClockCircleOutlined,
-
+        DateRangePicker,
         AdminPageHeader,
         UpdateStatus,
         StateWidget,

@@ -16,10 +16,8 @@
                         >
                             <a-form layout="vertical">
                                 <div class="login-logo mb-30">
-                                    <img
-                                        class="login-img-logo"
-                                        :src="globalSetting.light_logo_url"
-                                    />
+
+                                    <h1>PolicyKro</h1>
                                 </div>
                                 <a-alert
                                     v-if="onRequestSend.error != ''"
@@ -80,7 +78,6 @@
                                     </a-button>
                                 </a-form-item>
                             </a-form>
-                            <DemoCredentials :credentials="credentials" />
                         </a-card>
                     </a-col>
                 </a-row>

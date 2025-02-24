@@ -2,6 +2,7 @@
 
 use Examyou\RestAPI\Facades\ApiRoute;
 
+
 // Admin Routes
 ApiRoute::group(['namespace' => 'App\Http\Controllers\Api'], function () {
     ApiRoute::get('all-langs', ['as' => 'api.extra.all-langs', 'uses' => 'AuthController@allEnabledLangs']);

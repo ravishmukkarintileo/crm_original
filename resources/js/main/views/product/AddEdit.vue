@@ -195,6 +195,7 @@ export default defineComponent({
         Upload,
     },
     setup(props, { emit }) {
+
         const { appSetting } = common();
         const { addEditRequestAdmin, loading, rules } = apiAdmin();
         const onSubmit = () => {

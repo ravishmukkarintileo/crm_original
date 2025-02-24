@@ -16,6 +16,7 @@ import LeadCallRoutes from './leadsCalls';
 import SettingRoutes from './settings';
 import BookingRoutes from './bookings';
 import SetupAppRoutes from './setupApp';
+import branch from "./branch";
 import { checkUserPermission } from '../../common/scripts/functions';
 
 const appType = window.config.app_type;
@@ -50,6 +51,7 @@ const router = createRouter({
         },
         ...AuthRoutes,
         ...DashboardRoutes,
+        ...branch,
         ...UserRoutes,
         ...SettingRoutes,
         ...CampaignRoutes,

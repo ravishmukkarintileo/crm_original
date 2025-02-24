@@ -17,6 +17,7 @@ class ApiSuperAdminMiddleware
      */
     public function handle($request, Closure $next)
     {
+
         if (!auth('api')->check() || !auth('api')->user()->is_superadmin) {
             throw new ApiException('UNAUTHORIZED EXCEPTION', null, 401, 401);
         }

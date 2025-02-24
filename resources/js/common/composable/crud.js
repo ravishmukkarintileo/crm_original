@@ -57,6 +57,9 @@ const crud = () => {
     };
 
     const editItem = (item) => {
+
+        console.log(item ,'item');
+
         const itemDetails = {};
         var multiDimension = multiDimensalObjectColumns.value;
 
@@ -124,6 +127,7 @@ const crud = () => {
     };
 
     const showDeleteConfirm = (id) => {
+
         Modal.confirm({
             title: t("common.delete") + "?",
             icon: createVNode(ExclamationCircleOutlined),

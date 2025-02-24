@@ -54,6 +54,31 @@ const fields = () => {
                         title: t("lead.campaign"),
                         dataIndex: "campaign",
                     },
+                    {
+                        title: 'Customer',
+                        dataIndex: "reference_number",
+                    },
+                    {
+                        title: 'Vehicle',
+                        dataIndex: "campaign",
+                    },
+
+                    {
+                        title: 'Status',
+                        dataIndex: "campaign",
+                    },
+                    {
+                        title: 'Sub Status',
+                        dataIndex: "campaign",
+                    },
+                    {
+                        title: 'Reminder Date',
+                        dataIndex: "campaign",
+                    },
+                    {
+                        title: 'Expiry Date',
+                        dataIndex: "campaign",
+                    },
                 ];
 
                 forEach(formFieldNamesResponse.data.data, (formFieldName) => {

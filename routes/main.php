@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 
 Route::get('{path}', function () {
     if (file_exists(storage_path('installed'))) {
-        $appName = "LeadPro";
+        $appName = "Policy Karo";
         $appVersion = File::get(public_path() . '/version.txt');
         $modulesData = Common::moduleInformations();
         $themeMode = session()->has('theme_mode') ? session('theme_mode') : 'light';

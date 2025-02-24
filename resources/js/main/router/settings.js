@@ -1,5 +1,6 @@
 import CompanyEdit from '../views/settings/company/Edit.vue';
 import ProfileEdit from '../views/settings/profile/Edit.vue';
+import BannerEdit from '../views/settings/banner/Edit.vue';
 import Langs from '../views/settings/translations/langs/index.vue';
 import Roles from '../views/settings/roles/index.vue';
 import Currencies from '../views/settings/currency/index.vue';
@@ -29,6 +30,16 @@ export default [
                     requireAuth: true,
                     menuParent: "settings",
                     menuKey: route => "profile",
+                }
+            },
+            {
+                path: 'Banner',
+                component: BannerEdit,
+                name: 'admin.settings.banner.index',
+                meta: {
+                    requireAuth: true,
+                    menuParent: "settings",
+                    menuKey: route => "Banner",
                 }
             },
             {

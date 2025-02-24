@@ -17,7 +17,9 @@ use App\Models\Lead;
 use App\Models\Salesman;
 use App\Models\Settings;
 use App\Models\StaffMember;
+use App\Models\banner;
 use App\Models\User;
+use App\Models\lead_count;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Examyou\RestAPI\ApiResponse;
@@ -276,6 +278,7 @@ class AuthController extends ApiBaseController
 
     public function dashboard(Request $request)
     {
+
         $user = user();
 
         $yourCampaignCount = CampaignUser::join('campaigns', 'campaigns.id', '=', 'campaign_users.campaign_id')
@@ -319,21 +322,179 @@ class AuthController extends ApiBaseController
                 ->whereRaw('DATE(lead_logs.date_time) <= ?', [$endDate]);
         }
 
+
         $yourLeadCount = $yourLeadCount->count();
         $totalTimes = $totalTimes->sum('time_taken');
         $totalFollowUps = $totalFollowUps->count();
+
+        $user = auth('api')->user();
+
+        // Store date values to avoid redundant calls
+        $todayStart = Carbon::today()->startOfDay();
+        $todayEnd = Carbon::today()->endOfDay();
+        $currentMonthStart = Carbon::now()->startOfMonth()->toDateString();
+        $currentMonthEnd = Carbon::now()->endOfMonth()->toDateString();
+        $nextMonthStart = Carbon::now()->addMonth()->startOfMonth()->toDateString();
+        $nextMonthEnd = Carbon::now()->addMonth()->endOfMonth()->toDateString();
+
+        if($user && $user->role_id !=1 ){
+
+            $branchId = $user->branch_id;
+
+            // Base Query for Leads
+            $leadQuery = Lead::join('campaigns', 'campaigns.id', '=', 'leads.campaign_id')
+                ->where('campaigns.branch_id', $branchId);
+
+            // Base Query for Lead Logs (Reminders)
+            // $leadLogQuery = Lead::join('lead_logs', 'leads.id', '=', 'lead_logs.lead_id')
+            //     ->join('campaigns', 'campaigns.id', '=', 'leads.campaign_id')
+            //     ->where('campaigns.branch_id', $branchId);
+
+            // === CURRENT MONTH DATA ===
+            $currentMonthLeads = (clone $leadQuery)->whereBetween('leads.expiry_date', [$currentMonthStart, $currentMonthEnd]);
+            $totalFreshLeadsCurrentMonth = (clone $currentMonthLeads)->where('leads.lead_status', "Fresh")->count();
+            $totalConvertedLeadsCurrentMonth = (clone $currentMonthLeads)->where('leads.lead_status', "Converted")->count();
+            $totalLostLeadsCurrentMonth = (clone $currentMonthLeads)->where('leads.lead_status', "Lost")->count();
+            $totalYetToContactLeadsCurrentMonth = (clone $currentMonthLeads)->where('leads.lead_status', "Yet To Contact")->count();
+            $totalCallbackLeadsCurrentMonth = (clone $currentMonthLeads)->where('leads.lead_status', "Callback")->count();
+
+            // // Total follow-ups
+            $totalFollowUpsCurrentMonth = (clone $leadQuery)
+            ->join('lead_logs', 'lead_logs.id', '=', 'leads.lead_follow_up_id')
+            ->where('campaigns.status', '!=', 'completed')
+            ->whereNotNull('leads.lead_follow_up_id')
+            ->whereBetween('lead_logs.date_time', [$todayStart, $todayEnd])
+            ->count();
+
+
+
+            // === NEXT MONTH DATA ===
+            $nextMonthLeads = (clone $leadQuery)->whereBetween('leads.expiry_date', [$nextMonthStart, $nextMonthEnd]);
+            $totalFreshLeadsNextMonth = (clone $nextMonthLeads)->where('leads.lead_status', "Fresh")->count();
+            $totalConvertedLeadsNextMonth = (clone $nextMonthLeads)->where('leads.lead_status', "Converted")->count();
+            $totalLostLeadsNextMonth = (clone $nextMonthLeads)->where('leads.lead_status', "Lost")->count();
+            $totalYetToContactLeadsNextMonth = (clone $nextMonthLeads)->where('leads.lead_status', "Yet To Contact")->count();
+            $totalCallbackLeadsNextMonth = (clone $nextMonthLeads)->where('leads.lead_status', "Callback")->count();
+
+            // Total follow-ups
+            $totalFollowUpsNextMonth = (clone $leadQuery)
+            ->join('lead_logs', 'lead_logs.id', '=', 'leads.lead_follow_up_id')
+            ->where('campaigns.status', '!=', 'completed')
+            ->whereNotNull('leads.lead_follow_up_id')
+            ->whereBetween('lead_logs.date_time', [$nextMonthStart, $nextMonthEnd])
+            ->count();
+        }else{
+
+                /** Current Month */
+                /** total fresh lead for admin */
+
+                if ($request->has('branch_id')) {
+                    $branch_id = $request->branch_id;
+                } else {
+                    $branch_id = null;
+                }
+
+                // Query Builder
+                $leadQuery = Lead::query();
+                $leadLogQuery = Lead::join('lead_logs', 'leads.id', 'lead_logs.lead_id');
+
+                // If branch_id exists, filter by it
+                if ($branch_id) {
+                    $leadQuery->join('campaigns', 'campaigns.id', '=', 'leads.campaign_id')
+                        ->where('campaigns.branch_id', $branch_id);
+                }
+
+                // Get counts for current month
+                $totalFreshLeadsCurrentMonth = $leadQuery->where('lead_status', 'Fresh')
+                ->whereBetween('leads.expiry_date', [$currentMonthStart, $currentMonthEnd])->count();
+                $totalConvertedLeadsCurrentMonth = $leadQuery->where('lead_status', 'Converted')->count();
+                $totalLostLeadsCurrentMonth = $leadQuery->where('lead_status', 'Lost')
+                    ->whereBetween('leads.expiry_date', [$currentMonthStart, $currentMonthEnd])
+                    ->count();
+                $totalCallbackLeadsCurrentMonth = $leadQuery->where('lead_status', 'Callback')
+                ->whereBetween('leads.expiry_date', [$currentMonthStart, $currentMonthEnd])
+                ->count();
+                $totalYetToContactLeadsCurrentMonth = $leadQuery->where('lead_status', 'Yet to Contact')
+                    ->whereBetween('leads.expiry_date', [$currentMonthStart, $currentMonthEnd])
+                    ->count();
+
+                // Get counts for next month
+                $totalFreshLeadsNextMonth = $leadQuery->where('lead_status', 'Fresh')
+                    ->whereBetween('expiry_date', [$nextMonthStart, $nextMonthEnd])
+                    ->count();
+                $totalConvertedLeadsNextMonth = $leadQuery->where('lead_status', 'Converted')
+                    ->whereBetween('expiry_date', [$nextMonthStart, $nextMonthEnd])
+                    ->count();
+                $totalLostLeadsNextMonth = $leadQuery->where('lead_status', 'Lost')
+                    ->whereBetween('expiry_date', [$nextMonthStart, $nextMonthEnd])
+                    ->count();
+                $totalYetToContactLeadsNextMonth = $leadQuery->where('lead_status', 'Yet to Contact')
+                    ->whereBetween('expiry_date', [$nextMonthStart, $nextMonthEnd])
+                    ->count();
+                $totalCallbackLeadsNextMonth = $leadQuery->where('lead_status', 'Callback')
+                    ->whereBetween('expiry_date', [$nextMonthStart, $nextMonthEnd])
+                    ->count();
+
+
+                // // Total follow-ups
+                $totalFollowUpsCurrentMonth = Lead::join('campaigns', 'campaigns.id', '=', 'leads.campaign_id')
+                    ->join('lead_logs', 'lead_logs.id', '=', 'leads.lead_follow_up_id')
+                    ->where('campaigns.status', '!=', 'completed')
+                    ->whereNotNull('leads.lead_follow_up_id')
+                    ->whereBetween('lead_logs.date_time', [$todayStart, $todayEnd])
+                    ->count();
+
+                 // Total follow-ups
+                $totalFollowUpsNextMonth = Lead::join('campaigns', 'campaigns.id', '=', 'leads.campaign_id')
+                  ->join('lead_logs', 'lead_logs.id', '=', 'leads.lead_follow_up_id')
+                  ->where('campaigns.status', '!=', 'completed')
+                  ->whereNotNull('leads.lead_follow_up_id')
+                  ->whereBetween('lead_logs.date_time', [$nextMonthStart, $nextMonthEnd])
+                  ->count();
+
+
+        }
+
+
 
 
         return ApiResponse::make('Data fetched', [
             'actionedCampaigns' => $this->getActionedCampaigns(),
             'callMade' => $this->getCallMade(),
-            'allAppointments' => $this->getBookedAppointments(),
-            'allFollowUps' => $this->getFollowUps(),
+             'allAppointments' => $this->getBookedAppointments(),
+             'allFollowUps' => $this->getFollowUps(),
+             'allReminders' => $this->getReminder(),
+             'bannerDetails' => $this->getBannerDetails(),
+              'getCount'      => $this->getCount(),
             'stateData' => [
                 'campaign_count' => $yourCampaignCount,
                 'lead_count' => $yourLeadCount,
                 'total_times' => $totalTimes,
                 'total_follow_ups' => $totalFollowUps,
+                'total_fresh_leads' => $totalFreshLeadsCurrentMonth,
+                 'total_callback_leads' => $totalCallbackLeadsCurrentMonth,
+                'total_lost_leads' => $totalLostLeadsCurrentMonth,
+                'total_converted_leads' => $totalConvertedLeadsCurrentMonth,
+                'total_yet_to_contact_leads' => $totalYetToContactLeadsCurrentMonth,
+                'total_fresh_leads_next_month'=> $totalFreshLeadsNextMonth,
+
+                'total_fresh_leads' => $totalFreshLeadsCurrentMonth,
+                'total_callback_leads' => $totalCallbackLeadsCurrentMonth,
+                'total_lost_leads' => $totalLostLeadsCurrentMonth,
+                'total_converted_leads' => $totalConvertedLeadsCurrentMonth,
+                'total_yet_to_contact_leads' => $totalYetToContactLeadsCurrentMonth,
+                'total_followup_leads' => $totalFollowUpsCurrentMonth,
+                'total_followup_current_month' => $totalFollowUpsCurrentMonth,
+
+                'total_fresh_leads_next_month' => $totalFreshLeadsNextMonth,
+                'total_callback_leads_next_month' => $totalCallbackLeadsNextMonth,
+                'total_lost_leads_next_month' => $totalLostLeadsNextMonth,
+                'total_converted_leads_next_month' => $totalConvertedLeadsNextMonth,
+                'total_yet_to_contact_leads_next_month' => $totalYetToContactLeadsNextMonth,
+                'total_followup_leads_next_month' => $totalFollowUpsNextMonth,
+                'total_followup_next_month' => $totalFollowUpsNextMonth,
+
+                'total_fresh_leads_next_month'=> $totalFreshLeadsNextMonth,
             ]
         ]);
     }
@@ -343,14 +504,22 @@ class AuthController extends ApiBaseController
         $request = request();
         $user = user();
 
-        $allActionedCampaigns = CampaignUser::select('campaigns.id', 'campaigns.name')
+        $query = CampaignUser::select('campaigns.id', 'campaigns.name')
             ->join('campaigns', 'campaigns.id', '=', 'campaign_users.campaign_id')
-            ->where('campaign_users.user_id', '=', $user->id)
-            ->where(function ($query) {
-                return $query->where('campaigns.status', 'started')
-                    ->orWhereNull('campaigns.status');
-            })
-            ->get();
+            ->where('campaign_users.user_id', '=', $user->id);
+
+        // Apply branch check only if role_id is not 1
+        if ($user->role_id != 1) {
+            $query->where('campaigns.branch_id', '=', $user->branch_id);
+        }
+
+        // Apply status conditions
+        $query->where(function ($query) {
+            $query->where('campaigns.status', 'started')
+                ->orWhereNull('campaigns.status');
+        });
+
+        $allActionedCampaigns = $query->get();
 
         $actionedCampaignName = [];
         $actionedCampaignLeads = [];
@@ -501,7 +670,7 @@ class AuthController extends ApiBaseController
             ])
             ->join('campaigns', 'campaigns.id', '=', 'leads.campaign_id')
             ->join('lead_logs', 'lead_logs.id', '=', 'leads.lead_follow_up_id')
-            ->where('leads.last_action_by', '=', $user->id)
+            // ->where('leads.last_action_by', '=', $user->id)
             ->where(function ($query) {
                 return $query->where('campaigns.status', 'started')
                     ->orWhereNull('campaigns.status');
@@ -521,6 +690,67 @@ class AuthController extends ApiBaseController
 
 
         return $allAppointments;
+    }
+
+    public function getReminder()
+    {
+        $request = request();
+        $user = user();
+
+        $allAppointments = Lead::select('leads.id', 'leads.reference_number', 'leads.lead_data', 'leads.started', 'leads.campaign_id', 'leads.time_taken', 'leads.first_action_by', 'leads.last_action_by', 'leads.lead_follow_up_id')
+            ->with([
+                'campaign' => function ($query) {
+                    $query->select('id', 'name', 'status');
+                },
+                'firstActioner' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'lastActioner' => function ($query) {
+                    $query->select('id', 'name');
+                },
+                'leadFollowUp' => function ($query) {
+                    $query->select('id', 'lead_id', 'user_id', 'date_time');
+                },
+                'leadFollowUp.user' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])
+            ->join('campaigns', 'campaigns.id', '=', 'leads.campaign_id')
+            ->join('lead_logs', 'lead_logs.id', '=', 'leads.lead_follow_up_id')
+            // ->where('leads.last_action_by', '=', $user->id)
+            ->where('leads.lead_status', '=', "Follow-up")
+            ->where('leads.sub_lead_status', '=', "Appointment")
+            ->where(function ($query) {
+                return $query->where('campaigns.status', 'started')
+                    ->orWhereNull('campaigns.status');
+            })
+            ->whereNotNull('lead_follow_up_id');
+
+        if ($request->has('dates') && $request->dates != null && count($request->dates) > 0) {
+            $dates = $request->dates;
+            $startDate = $dates[0];
+            $endDate = $dates[1];
+
+            $allAppointments = $allAppointments->whereRaw('DATE(lead_logs.date_time) >= ?', [$startDate])
+                ->whereRaw('DATE(lead_logs.date_time) <= ?', [$endDate]);
+        }
+
+        $allAppointments = $allAppointments->take(5)->get();
+
+
+        return $allAppointments;
+    }
+
+    public function getBannerDetails(){
+        try {
+            //code...
+            $banner = Banner::find(1);
+
+            return $banner;
+        } catch (\Throwable $th) {
+            //throw $th;
+            echo $th->getMessage();
+        }
     }
 
     public function changeThemeMode(Request $request)
@@ -582,5 +812,19 @@ class AuthController extends ApiBaseController
                 'HH:mm:ss' => '24 Hours hh:mm:ss',
             ]
         ]);
+    }
+
+    public function getCount(){
+        try {
+            //code...
+            $user = user();
+
+            $lead_count = lead_count::where('user_id',$user->id)->first();
+            return $lead_count;
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            echo $th->getMessage();
+        }
     }
 }

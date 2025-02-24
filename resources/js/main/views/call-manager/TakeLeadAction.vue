@@ -279,7 +279,7 @@
                             }"
                         >
                             <a-skeleton v-if="newPageLoad" active />
-                            <a-form v-else layout="vertical" class="mt-20">
+                            <a-form v-else layout="vertical" class="mt-20 mb-20 pb-20" style="margin-bottom: 50px;">
                                 <a-row :gutter="16">
                                     <a-col :xs="24" :sm="24" :md="12" :lg="12">
                                         <a-form-item
@@ -306,49 +306,72 @@
                                             />
                                         </a-form-item>
                                     </a-col>
+
+                                    <a-col :xs="24" :sm="24" :md="12" :lg="12">
+
+                                    </a-col>
+
                                     <a-col :xs="24" :sm="24" :md="12" :lg="12">
                                         <a-form-item
-                                            :label="$t('lead.lead_status')"
+                                            label="Lead Category"
                                             name="lead_status"
-                                            :help="
-                                                rules.lead_status
-                                                    ? rules.lead_status.message
-                                                    : null
-                                            "
-                                            :validateStatus="
-                                                rules.lead_status ? 'error' : null
-                                            "
+                                            :help="rules.lead_category ? rules.lead_category.message : null"
+                                            :validateStatus="rules.lead_category ? 'error' : null"
                                         >
                                             <a-select
-                                                v-model:value="leadStatus"
-                                                :placeholder="
-                                                    $t('common.select_default_text', [
-                                                        $t('lead.lead_status'),
-                                                    ])
-                                                "
+                                            v-model:value="selectedCategory"
+                                            :placeholder="$t('common.select_default_text', 'Lead Status')"
+                                            @change="handleCategoryChange"
                                             >
-                                                <a-select-option
-                                                    key="interested"
-                                                    value="interested"
-                                                >
-                                                    {{ $t("lead.interested") }}
-                                                </a-select-option>
-                                                <a-select-option
-                                                    key="not_interested"
-                                                    value="not_interested"
-                                                >
-                                                    {{ $t("lead.not_interested") }}
-                                                </a-select-option>
-                                                <a-select-option
-                                                    key="unreachable"
-                                                    value="unreachable"
-                                                >
-                                                    {{ $t("lead.unreachable") }}
+
+                                            <a-select-option key="Fresh" value="Fresh">Fresh</a-select-option>
+                                            <a-select-option key="Follow-up" value="Follow-up">Follow-up</a-select-option>
+                                            <a-select-option key="Callback" value="Callback">Callback</a-select-option>
+                                            <a-select-option key="Yet to Contact" value="Yet to Contact">Yet to Contact</a-select-option>
+                                            <a-select-option key="Lost" value="Lost">Lost</a-select-option>
+                                            <a-select-option key="Converted" value="Converted">Converted</a-select-option>
+                                            </a-select>
+                                        </a-form-item>
+                                    </a-col>
+
+                                    <!-- Subcategory field should only appear when a valid subcategory exists -->
+                                    <a-col :xs="24" :sm="24" :md="12" :lg="12" v-if="selectedCategory && subcategories[selectedCategory]?.length">
+                                        <a-form-item
+                                            label="Lead Sub Category"
+                                            name="lead_subcategory"
+                                            :help="rules.lead_subcategory ? rules.lead_subcategory.message : null"
+                                            :validateStatus="rules.lead_subcategory ? 'error' : null"
+                                        >
+                                            <a-select v-model:value="selectedSubcategory" :placeholder="$t('common.select_default_text', [$t('lead.lead_subcategory')])"
+                                            @change="handleSubCategoryChange">
+                                                <a-select-option v-for="subcategory in subcategories[selectedCategory]" :key="subcategory" :value="subcategory">
+                                                    {{ subcategory }}
                                                 </a-select-option>
                                             </a-select>
                                         </a-form-item>
                                     </a-col>
+
+                                    <!-- expiry data  -->
+                                    <a-col :xs="24" :sm="24" :md="12" :lg="12">
+                                        <a-form-item
+                                            label="Expiry Date"
+                                            name="expiry_date"
+                                            :help="rules.expiry_date ? rules.expiry_date.message : null"
+                                            :validateStatus="rules.expiry_date ? 'error' : null"
+                                        >
+                                            <a-date-picker
+                                                v-model:value="selectedExpiryDate"
+                                                format="YYYY-MM-DD"
+                                                :placeholder="$t('common.select_default_text', 'Select Expiry Date')"
+                                                @change="handleExpiryDateChange"
+                                                style="width: 100%"
+                                            />
+                                        </a-form-item>
+                                    </a-col>
+
+
                                 </a-row>
+
                                 <a-row :gutter="16">
                                     <a-col
                                         v-for="leadData in leadFormData.lead_data"
@@ -419,7 +442,9 @@
                                         </a-form-item>
                                     </a-col>
                                 </a-row>
+
                             </a-form>
+
                         </perfect-scrollbar>
                         <div
                             :style="{
@@ -637,6 +662,8 @@ export default {
         const leadFollowUp = ref({});
         const salesmanBooking = ref({});
         const leadStatus = ref(undefined);
+        const subLeadStatus = ref(undefined);
+        const expiryDate  = ref(undefined);
         const leadNumber = ref(0);
         const newPageLoad = ref(true);
         const refreshTimeLine = ref(false);
@@ -663,6 +690,8 @@ export default {
             salesmanBooking.value = {};
             referenceNumber.value = "";
             leadStatus.value = undefined;
+            subLeadStatus.value = undefined;
+            expiryDate.value = undefined;
             leadNumber.value = 0;
             newPageLoad.value = true;
 
@@ -672,6 +701,8 @@ export default {
             Promise.all([leadDetailsPromise, leadCallLogPromise]).then(
                 ([leadDetailsResponse, leadCallLogResponse]) => {
                     var leadResult = leadDetailsResponse.data;
+                    console.log(leadResult);
+
 
                     leadNumber.value = leadCallLogResponse.data.lead_number;
                     leadCallLogDetails.value = leadCallLogResponse.data.call_log;
@@ -725,6 +756,8 @@ export default {
                         ? leadResult.salesman_booking
                         : [];
                     leadStatus.value = leadResult.lead_status;
+                    subLeadStatus.value = leadResult.sub_lead_status;
+                    expiryDate.value = leadResult.expiry_date;
 
                     timer.reset(leadResult.time_taken, true);
 
@@ -763,6 +796,11 @@ export default {
             });
         };
 
+        const handleExpiryDateChange = (date, dateString) => {
+            expiryDate.value = dateString;
+        };
+
+
         const saveLead = (saveType = "auto") => {
             if (saveType == "save") {
                 saveLoading.value = true;
@@ -770,12 +808,16 @@ export default {
                 saveExitLoading.value = true;
             }
 
+            console.log(expiryDate,'s');
+
             addEditRequestAdmin({
                 url: `campaigns/update-actioned-lead`,
                 data: {
                     ...leadFormData.value,
                     reference_number: referenceNumber.value,
                     lead_status: leadStatus.value,
+                    sub_lead_status: subLeadStatus.value,
+                    expiry_date: expiryDate.value,
                     call_log_id: leadCallLogDetails.value.xid,
                     call_time: calculateTotalTimeInSeconds(),
                     x_lead_id: route.params.id,
@@ -946,9 +988,12 @@ export default {
             formatDateTime,
             timer,
             leadStatus,
+            subLeadStatus,
+            expiryDate,
+
             leadNumber,
             newPageLoad,
-
+            handleExpiryDateChange,
             takeLeadAction,
             refreshTimeLine,
 
@@ -964,8 +1009,75 @@ export default {
             skipSuccess,
 
             getLeadDataFieldType,
+            selectedCategory: null,
+            selectedSubcategory: null,
+            subcategories: {
+                'Converted' : ['Deal'],
+                'Follow-up': ['Hot', 'Warm', 'Cold'],
+                'Callback': ['Busy', 'Driving', 'Meeting', 'Out of Station'],
+                'Yet to Contact': ['Not Reachable', 'Ringing', 'Switched Off'],
+                'Lost': ['Number Does Not Exist', 'Not Contactable', 'Not Interested', 'Own Agent', 'Already Renewed', 'Lost to Competition', 'High Premium']
+            }
         };
     },
+    data() {
+        return {
+            leadStatus: null,
+            expiryDate: null,
+            selectedCategory: null,
+            selectedSubcategory: null,
+            subcategories: {
+            'Converted': ['Deal'],
+            'Follow-up': ['Hot', 'Warm', 'Cold'],
+            'Callback': ['Busy', 'Driving', 'Meeting', 'Out of Station'],
+            'Yet to Contact': ['Not Reachable', 'Ringing', 'Switched Off'],
+            'Lost': [
+                'Number Does Not Exist',
+                'Not Contactable',
+                'Not Interested',
+                'Own Agent',
+                'Already Renewed',
+                'Lost to Competition',
+                'High Premium'
+            ]
+           }
+        };
+    },
+    methods: {
+        handleLeadStatusChange(value) {
+            console.log("Selected Lead Status:", value);
+            this.leadStatus = value;
+
+            // Remove the "Policy" field if it exists
+            this.leadFormData.lead_data = this.leadFormData.lead_data.filter(
+                (item) => item.field_name !== "Policy"
+            );
+
+            // If "Converted" is selected, add the "Policy" field
+            if (value === "Converted") {
+                this.leadFormData.lead_data.push({
+                    id: new Date().getTime(), // Unique ID
+                    field_name: "Policy No",
+                    field_value: "",
+                    type: "text", // You can change to "text" or "number" if needed
+                });
+            }
+        },
+
+        handleCategoryChange(value) {
+            this.leadStatus = value;
+            this.expiryDate  = 'd';
+            this.selectedCategory = value;
+            this.selectedSubcategory = null;
+            this.subcategories = { ...this.subcategories };
+        },
+        handleSubCategoryChange(value) {
+
+            this.subLeadStatus = value;
+
+        }
+    },
+
 };
 </script>
 
@@ -990,3 +1102,4 @@ export default {
     height: calc(100vh - 99px);
 }
 </style>
+

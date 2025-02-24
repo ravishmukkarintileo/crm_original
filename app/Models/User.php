@@ -17,7 +17,7 @@ class User extends BaseModel implements AuthenticatableContract, JWTSubject
 {
     use Notifiable, EntrustUserTrait, Authenticatable, HasFactory;
 
-    protected $default = ["xid", "name", "profile_image"];
+    protected $default = ["xid", "name", "profile_image","adhaar","pan_card","check_copy"];
 
     protected $guarded = ['id', 'company_id', 'created_at', 'updated_at'];
 
@@ -25,9 +25,9 @@ class User extends BaseModel implements AuthenticatableContract, JWTSubject
 
     protected $hidden = ['id', 'role_id', 'password', 'remember_token'];
 
-    protected $appends = ['xid', 'x_company_id', 'x_role_id', 'profile_image_url'];
+    protected $appends = ['xid', 'x_company_id', 'x_role_id', 'profile_image_url','adhaar_url','pan_card_url','check_copy_url'];
 
-    protected $filterable = ['name', 'user_type', 'email', 'status', 'phone'];
+    protected $filterable = ['name', 'user_type', 'email', 'status', 'phone','branch_id','adhaar', 'pan_card', 'check_copy'];
 
     protected $hashableGetterFunctions = [
         'getXCompanyIdAttribute' => 'company_id',
@@ -79,6 +79,29 @@ class User extends BaseModel implements AuthenticatableContract, JWTSubject
         return $this->profile_image == null ? asset('images/user.png') : Common::getFileUrl($userImagePath, $this->profile_image);
     }
 
+    public function getAdhaarUrlAttribute()
+    {
+        $adhaarPath = Common::getFolderPath('userImagePath'); // Define the folder path in Common
+        return $this->adhaar_card == null
+            ? null
+            : Common::getFileUrl($adhaarPath, $this->adhaar_card);
+    }
+
+    public function getPanCardUrlAttribute()
+    {
+        $panCardPath = Common::getFolderPath('userImagePath'); // Define the folder path in Common
+        return $this->pan_card == null
+            ? null
+            : Common::getFileUrl($panCardPath, $this->pan_card);
+    }
+
+    public function getCheckCopyUrlAttribute()
+    {
+        $checkCopyPath = Common::getFolderPath('userImagePath'); // Define the folder path in Common
+        return $this->check_copy == null
+            ? null
+            : Common::getFileUrl($checkCopyPath, $this->check_copy);
+    }
     public function role()
     {
         return $this->belongsTo(Role::class);

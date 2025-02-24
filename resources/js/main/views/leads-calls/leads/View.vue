@@ -15,6 +15,18 @@
             <a-descriptions-item :label="$t('lead.campaign')">
                 {{ lead && lead.campaign ? lead.campaign.name : "-" }}
             </a-descriptions-item>
+            <a-descriptions-item :label="test">
+                test
+            </a-descriptions-item>
+            <a-descriptions-item :label="$t('lead.campaign')">
+                {{ lead && lead.campaign ? lead.campaign.name : "-" }}
+            </a-descriptions-item>
+            <a-descriptions-item :label="$t('lead.campaign')">
+                {{ lead && lead.campaign ? lead.campaign.name : "-" }}
+            </a-descriptions-item>
+            <a-descriptions-item :label="$t('lead.campaign')">
+                {{ lead && lead.campaign ? lead.campaign.name : "-" }}
+            </a-descriptions-item>
             <a-descriptions-item :label="$t('campaign.first_actioner')">
                 {{
                     lead && lead.first_actioner && lead.first_actioner.name

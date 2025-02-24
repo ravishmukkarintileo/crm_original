@@ -18,6 +18,7 @@ use App\Models\Lead;
 use App\Models\LeadLog;
 use App\Models\Salesman;
 use App\Models\Settings;
+use App\Models\lead_count;
 use App\Notifications\SendLeadMail;
 use App\Scopes\CompanyScope;
 use Carbon\Carbon;
@@ -89,6 +90,7 @@ class LeadController extends ApiBaseController
     public function createLead(CreateLeadRequest $request)
     {
         $user = user();
+
 
         if (!$user->ability('admin', 'leads_create')) {
             throw new ApiException("Not Allowed");
@@ -379,4 +381,21 @@ class LeadController extends ApiBaseController
             'success' => $success,
         ]);
     }
+
+
+    public function updateCount(Request $request){
+        try {
+            //code...
+            $user = user();
+            $total_leads = $request->total_leads;
+            $lead_count = lead_count::where('user_id',$user->id)->update([
+                'total_leads' => $total_leads,
+            ]);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+
+
 }

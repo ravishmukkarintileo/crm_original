@@ -214,6 +214,7 @@ class CampaignController extends ApiBaseController
         $loggedUser = user();
 
         $lead = new Lead();
+
         $lead->campaign_id = $campaign->id;
         // Reference Prefix
         if ($campaign->allow_reference_prefix) {
@@ -245,6 +246,7 @@ class CampaignController extends ApiBaseController
 
     public function takeLeadAction(TakeLeadActionRequest $request)
     {
+
         $user = user();
         $request = request();
         $actionType = $request->action_type;

@@ -127,6 +127,7 @@ import { UploadOutlined, FileOutlined } from "@ant-design/icons-vue";
 import { useI18n } from "vue-i18n";
 import Papa from "papaparse";
 import { forEach, find, includes, size } from "lodash-es";
+import * as XLSX from "xlsx";
 
 export default defineComponent({
     props: {
@@ -170,37 +171,30 @@ export default defineComponent({
         ];
 
         const customRequest = (info) => {
-            const newFormData = new FormData();
-            newFormData.append("file", info.file);
-            newFormData.append("folder", props.folder);
+            const file = info.file;
+            const fileType = file.name.split(".").pop().toLowerCase();
 
             loading.value = true;
 
-            let reader = new FileReader();
-            reader.readAsText(info.file, "UTF-8");
-            reader.onload = function (evt) {
-                const parsedResult = Papa.parse(evt.target.result, {
-                    preview: 3,
-                    header: true,
-                    skipEmptyLines: true,
-                });
+            if (fileType === "csv") {
+                // Handle CSV file using PapaParse
+                let reader = new FileReader();
+                reader.readAsText(file, "UTF-8");
+                reader.onload = function (evt) {
+                    parseCSV(evt.target.result);
+                };
+            } else if (fileType === "xlsx") {
+                // Handle XLSX file
+                let reader = new FileReader();
+                reader.readAsArrayBuffer(file);
+                reader.onload = function (evt) {
+                    parseXLSX(evt.target.result);
+                };
+            } else {
+                console.error("Unsupported file format");
+            }
 
-                parsedFileData.value = parsedResult.data;
-                parsedHeader.value = parsedResult.meta.fields;
-                currentUploadedFile.value = info.file;
-
-                var newValues = {};
-                forEach(parsedHeader.value, (filterValue, filterKey) => {
-                    const isFieldFind = includes(props.allFields, filterValue);
-
-                    newValues[filterValue] = isFieldFind ? filterValue : undefined;
-                });
-                formProperties.value = newValues;
-
-                reAssignCurrentFormFields();
-            };
-
-            emit("fileUploaded", info.file);
+            emit("fileUploaded", file);
         };
 
         const getPreviewData = (fieldName) => {
@@ -271,11 +265,50 @@ export default defineComponent({
             }
         );
 
+        // Function to parse CSV file
+        const parseCSV = (csvData) => {
+            const parsedResult = Papa.parse(csvData, {
+                preview: 3,
+                header: true,
+                skipEmptyLines: true,
+            });
+
+            processParsedData(parsedResult.data, parsedResult.meta.fields);
+        };
+
+        // Function to parse XLSX file and convert it to CSV
+        const parseXLSX = (data) => {
+            const workbook = XLSX.read(data, { type: "array" });
+            const sheetName = workbook.SheetNames[0]; // Get first sheet
+            const sheet = workbook.Sheets[sheetName];
+
+            // Convert to CSV
+            const csv = XLSX.utils.sheet_to_csv(sheet);
+            parseCSV(csv);
+        };
+
+        // Function to process parsed data (both CSV & XLSX)
+        const processParsedData = (parsedData, parsedHeaders) => {
+            parsedFileData.value = parsedData;
+            parsedHeader.value = parsedHeaders;
+
+            let newValues = {};
+            parsedHeaders.forEach((filterValue) => {
+                const isFieldFind = props.allFields.includes(filterValue);
+                newValues[filterValue] = isFieldFind ? filterValue : undefined;
+            });
+
+            formProperties.value = newValues;
+            reAssignCurrentFormFields();
+        };
+
         return {
             fileList,
             loading,
             customRequest,
-
+            parseCSV,
+            parseXLSX,
+            processParsedData,
             columns,
             currentUploadedFile,
             parsedFileData,

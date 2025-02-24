@@ -30,6 +30,17 @@
                     </template>
                     {{ $t("menu.profile") }}
                 </a-menu-item>
+
+                <a-menu-item
+                    key="Banner"
+                    @click="$router.push({ name: 'admin.settings.banner.index' })"
+                >
+                    <template #icon>
+                        <UserOutlined />
+                    </template>
+                   Banner
+                </a-menu-item>
+
                 <a-menu-item
                     key="translations"
                     v-if="
