@@ -6,18 +6,24 @@
                     <MenuOutlined class="trigger" @click="showHideMenu" />
                 </a-space>
             </a-col>
-            <a-col :span="21" style="overflow: hidden; white-space: nowrap; padding:6px auto;">
 
-                    <h2 style="color: red; font-size: 16px; margin: 0;  text-overflow: ellipsis; overflow: hidden;">
-                    <b>{{ formData.head }}</b>
-                    </h2>
-                </a-col>
 
-                <!-- <a-col :span="5" style="overflow: hidden; white-space: nowrap; padding:6px auto">
-                    <h2 style="color: red; font-size: 14px; margin: 0; text-overflow: ellipsis; overflow: hidden;">
-                    <b>{{ formData.sub_head }}</b>
-                    </h2>
-                </a-col> -->
+            <a-col :span="10" style="overflow: hidden; white-space: nowrap; padding:10px auto;">
+
+            <h2 style="color: red; font-size: 16px; margin: 0;  text-overflow: ellipsis; overflow: hidden;">
+            <b>{{ formData.head }}</b>
+            </h2>
+            </a-col>
+
+            <a-col :span="1" style="overflow: hidden; white-space: nowrap; padding:10px auto">
+
+            </a-col>
+
+            <a-col :span="10" style="overflow: hidden; white-space: nowrap; padding:10px auto">
+            <h2 style="color: red; font-size: 14px; margin: 0; text-overflow: ellipsis; overflow: hidden;">
+            <b>{{ formData.sub_head }}</b>
+            </h2>
+            </a-col>
 
 
             <a-col :span="2">
