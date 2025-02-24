@@ -10,6 +10,7 @@
 
         <a-row :gutter="[8, 8]" class="mt-30 mb-30">
             <a-col :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
+                <h2>Select By Date Range</h2>
                 <DateRangePicker
                     ref="serachDateRangePicker"
                     @dateTimeChanged="
@@ -19,27 +20,29 @@
             </a-col>
 
             <a-col
-    v-if="permsArray.includes('admin')"
-    :xs="24"
-    :sm="24"
-    :md="6"
-    :lg="6"
->
-    <a-select
-        :placeholder="$t('common.select_default_text', 'Branch Name')"
-        :allowClear="true"
-        style="width: 100%"
-        @change="setUrlData"
-    >
-        <a-select-option
-            v-for="branch in branches"
-            :key="branch.id"
-            :value="branch.id"
-        >
-            {{ branch.name }}
-        </a-select-option>
-    </a-select>
-</a-col>
+                v-if="permsArray.includes('admin')"
+                :xs="24"
+                :sm="24"
+                :md="6"
+                :lg="6"
+            >
+            <h2>Select By Branch</h2>
+
+                <a-select
+                    :placeholder="$t('common.select_default_text', 'Branch Name')"
+                    :allowClear="true"
+                    style="width: 100%"
+                    @change="setUrlData"
+                >
+                    <a-select-option
+                        v-for="branch in branches"
+                        :key="branch.id"
+                        :value="branch.id"
+                    >
+                        {{ branch.name }}
+                    </a-select-option>
+                </a-select>
+            </a-col>
 
 
             <a-col :xs="24" :sm="24" :md="6" :lg="6">
