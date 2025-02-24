@@ -17,7 +17,7 @@
                             <a-form layout="vertical">
                                 <div class="login-logo mb-30">
 
-                                    <h1>PolicyKro</h1>
+                                    <h1>PolicyKaro</h1>
                                 </div>
                                 <a-alert
                                     v-if="onRequestSend.error != ''"
