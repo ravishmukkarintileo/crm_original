@@ -233,7 +233,7 @@ class ApiModel extends Model
 	 */
 	public function fill(array $attributes = [])
 	{
-		$this->raw = $attributes;
+        $this->raw = $attributes;
 
 		$excludes = config("api.excludes");
 
@@ -308,6 +308,8 @@ class ApiModel extends Model
 				unset($this->relationAttributes[$key]);
 			}
 		}
+
+
 
 		parent::save($options);
 
@@ -388,5 +390,6 @@ class ApiModel extends Model
 				$relation->sync($relatedIds);
 			}
 		}
+
 	}
 }

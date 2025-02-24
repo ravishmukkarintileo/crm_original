@@ -64,7 +64,7 @@ class ApiController extends \Illuminate\Routing\Controller
 	private $query = null;
 
 	/**
-	 * Modify select for query 
+	 * Modify select for query
 	 *
 	 * @var string
 	 */
@@ -153,6 +153,8 @@ class ApiController extends \Illuminate\Routing\Controller
 	{
 		$this->validate();
 
+        dd('d');
+
 		$results = $this->parseRequest()
 			->addIncludes()
 			->addFilters()
@@ -161,6 +163,7 @@ class ApiController extends \Illuminate\Routing\Controller
 			->modify()
 			->getResults()
 			->toArray();
+
 
 		$meta = $this->getMetaData();
 
@@ -178,6 +181,7 @@ class ApiController extends \Illuminate\Routing\Controller
 		// if we map route /user/{user}/comments/{comment} to a controller, Laravel will pass `user`
 		// as first argument and `comment` as last argument. So, id object that we want to fetch
 		// is the last argument.
+
 		$xid = last(func_get_args());
 		$convertedId = Hashids::decode($xid);
 		$id = $convertedId[0];
@@ -199,9 +203,12 @@ class ApiController extends \Illuminate\Routing\Controller
 
 	public function store()
 	{
+
+
 		\DB::beginTransaction();
 
 		$this->validate();
+
 
 		// Create new object
 		/** @var ApiModel $object */
@@ -210,7 +217,7 @@ class ApiController extends \Illuminate\Routing\Controller
 
 		// Run hook if exists
 		if (method_exists($this, 'storing')) {
-			$object = call_user_func([$this, 'storing'], $object);
+            $object = call_user_func([$this, 'storing'], $object);
 		}
 
 		$object->save();
@@ -222,6 +229,8 @@ class ApiController extends \Illuminate\Routing\Controller
 		if (method_exists($this, 'stored')) {
 			call_user_func([$this, 'stored'], $object);
 		}
+
+
 
 		return ApiResponse::make("Resource created successfully", ["xid" => $object->xid], $meta);
 	}
@@ -385,6 +394,7 @@ class ApiController extends \Illuminate\Routing\Controller
 					$relations = $this->parser->getRelations();
 
 					$tableName = $q->getRelated()->getTable();
+
 					$primaryKey = $q->getRelated()->getKeyName();
 
 					if ($relation["userSpecifiedFields"]) {
@@ -399,6 +409,7 @@ class ApiController extends \Illuminate\Routing\Controller
 
 						$relations[$key]["fields"] = $fields;
 					}
+
 
 					// Remove appends from select
 					$appends = call_user_func(get_class($q->getRelated()) . "::getAppendFields");
@@ -463,6 +474,7 @@ class ApiController extends \Illuminate\Routing\Controller
 							$q->orderBy($primaryKey, ($relation["order"] == "chronological") ? "ASC" : "DESC");
 						}
 
+
 						$q->select($fields);
 
 						$q->take($relation["limit"]);
@@ -481,6 +493,7 @@ class ApiController extends \Illuminate\Routing\Controller
 			$this->query = call_user_func($this->model . "::query");
 		}
 
+
 		return $this;
 	}
 
@@ -493,12 +506,20 @@ class ApiController extends \Illuminate\Routing\Controller
 	 */
 	protected function addFilters()
 	{
-		if ($this->parser->getFilters()) {
 
-			$this->query->whereRaw($this->parser->getFilters());
-		}
 
-		return $this;
+        $user = auth('api')->user();
+
+        if ($user && $user->role_id != 1 && $this->model == "App\Models\Campaign") {
+            $this->query->where('branch_id', $user->branch_id);
+        }
+
+        if ($this->parser->getFilters()) {
+            $this->query->whereRaw($this->parser->getFilters());
+        }
+
+        return $this;
+
 	}
 
 	/**
@@ -555,13 +576,16 @@ class ApiController extends \Illuminate\Routing\Controller
 	 */
 	protected function getResults($single = false)
 	{
+
 		$customAttributes = call_user_func($this->model . "::getAppendFields");
+
 
 		// Laravel's $appends adds attributes always to the output. With this method,
 		// we can specify which attributes are to be included
 		$appends = [];
 
 		$fields = $this->parser->getFields();
+
 
 		foreach ($fields as $key => $field) {
 			if (in_array($field, $customAttributes)) {
@@ -573,19 +597,21 @@ class ApiController extends \Illuminate\Routing\Controller
 			}
 		}
 
+
 		$this->parser->setFields($fields);
 
-
 		if (!$single) {
-			/** @var Collection $results */
+            /** @var Collection $results */
 			$results = $this->query;
 			if (!$this->modifySelect) {
-				$results = $results->select($fields);
+                $results = $results->select($fields);
 			}
 			$results = $results->get();
+
 		} else {
 			/** @var Collection $results */
 			$results = $this->query;
+
 			if (!$this->modifySelect) {
 				$results = $results->select($fields);
 			}
