@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Branch;
+use App\Models\branch;
 use Illuminate\Validation\ValidationException;
 
 class BranchController extends Controller
@@ -13,13 +13,14 @@ class BranchController extends Controller
 
     public function index(Request $request)
     {
+
         $order = $request->query('order', 'id desc');
 
         $offset = (int) $request->query('offset', 0);
         $limit = (int) $request->query('limit', 10);
 
         // Fetch total count
-        $total = Branch::count();
+        $total = branch::count();
 
         // Fetch branches
         $branches = Branch::where('is_deleted', 0) // Example condition
@@ -28,7 +29,7 @@ class BranchController extends Controller
         ->limit($limit)
         ->get();
 
-
+       
         // Calculate pagination details
         $currentPage = ($offset / $limit) + 1;
         $totalPages = ceil($total / $limit);
