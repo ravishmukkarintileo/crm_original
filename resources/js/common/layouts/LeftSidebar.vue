@@ -14,7 +14,7 @@
         class="sidebar-right-border"
     >
         <div v-if="menuCollapsed" class="logo">
-            <img
+            <!-- <img
                 :style="{
                     height: '32px',
                 }"
@@ -23,7 +23,7 @@
                         ? appSetting.small_dark_logo_url
                         : appSetting.small_light_logo_url
                 "
-            />
+            /> -->
         </div>
         <div v-else>
 
