@@ -801,14 +801,34 @@ export default {
         };
 
 
+        const isSaving = ref(false);
+
         const saveLead = (saveType = "auto") => {
-            if (saveType == "save") {
+            if (isSaving.value) return; // Prevent multiple executions
+            isSaving.value = true; // Set flag to prevent re-entry
+
+            if (saveType === "save") {
                 saveLoading.value = true;
-            } else if (saveType == "save_exit") {
+            } else if (saveType === "save_exit") {
                 saveExitLoading.value = true;
             }
 
-            console.log(expiryDate,'s');
+            // Check if lead_status is "Converted" and Policy No is empty
+            if (leadStatus.value === "Converted") {
+
+                const policyField = leadFormData.value.lead_data.find(field => field.field_name === "Policy No *");
+                console.log(leadStatus.value,leadFormData.value.lead_data,policyField,'valuesss');
+
+                if (!policyField ||  !policyField.field_value || !policyField.field_value.trim()) {
+                    alert("Policy No is required when Lead Status is Converted.");
+                    saveLoading.value = false;
+                    saveExitLoading.value = false;
+                    isSaving.value = false; // Reset flag
+                    return;
+                }
+            }
+
+            console.log(expiryDate, 's');
 
             addEditRequestAdmin({
                 url: `campaigns/update-actioned-lead`,
@@ -825,17 +845,18 @@ export default {
                 success: (res) => {
                     autoSaved.value = true;
                     saveLoading.value = false;
+                    isSaving.value = false; // Reset flag
 
-                    if (saveType == "save_exit") {
+                    if (saveType === "save_exit") {
                         saveExitLoading.value = false;
-
                         router.push({
                             name: "admin.call_manager.index",
                         });
-
-                        // store.dispatch("auth/showNotificaiton", {});
                     }
                 },
+                error: () => {
+                    isSaving.value = false; // Reset flag on error
+                }
             });
         };
 
@@ -958,7 +979,7 @@ export default {
 
         watch(timer.seconds, (newVal, oldVal) => {
             if (timer.seconds.value % 5 == 0) {
-                saveLead();
+                // saveLead();
             }
         });
 
@@ -1044,7 +1065,35 @@ export default {
         };
     },
     methods: {
-        handleLeadStatusChange(value) {
+        // handleLeadStatusChange(value) {
+        //     console.log("Selected Lead Status:", value);
+        //     this.leadStatus = value;
+
+        //     // Remove the "Policy" field if it exists
+        //     this.leadFormData.lead_data = this.leadFormData.lead_data.filter(
+        //         (item) => item.field_name !== "Policy"
+        //     );
+
+        //     // If "Converted" is selected, add the "Policy" field
+        //     if (value === "Converted") {
+        //         this.leadFormData.lead_data.push({
+        //             id: new Date().getTime(), // Unique ID
+        //             field_name: "Policy No",
+        //             field_value: "",
+        //             type: "text", // You can change to "text" or "number" if needed
+        //         });
+        //     }
+        // },
+
+        handleCategoryChange(value) {
+            console.log(value,'value');
+
+            this.leadStatus = value;
+            this.expiryDate  = '';
+            this.selectedCategory = value;
+            this.selectedSubcategory = null;
+            this.subcategories = { ...this.subcategories };
+
             console.log("Selected Lead Status:", value);
             this.leadStatus = value;
 
@@ -1055,21 +1104,23 @@ export default {
 
             // If "Converted" is selected, add the "Policy" field
             if (value === "Converted") {
-                this.leadFormData.lead_data.push({
-                    id: new Date().getTime(), // Unique ID
-                    field_name: "Policy No",
-                    field_value: "",
-                    type: "text", // You can change to "text" or "number" if needed
-                });
-            }
-        },
+                    const policyFieldExists = this.leadFormData.lead_data.some(field => field.field_name === "Policy No *");
 
-        handleCategoryChange(value) {
-            this.leadStatus = value;
-            this.expiryDate  = 'd';
-            this.selectedCategory = value;
-            this.selectedSubcategory = null;
-            this.subcategories = { ...this.subcategories };
+                    if (!policyFieldExists) {
+                        this.leadFormData.lead_data.push({
+                            id: new Date().getTime(), // Unique ID
+                            field_name: "Policy No *",
+                            field_value: "",
+                            type: "text", // You can change to "text" or "number" if needed
+                        });
+                    }
+                    } else {
+                    this.leadFormData.lead_data = this.leadFormData.lead_data.filter(
+                        (field) => field.field_name !== "Policy No *"
+                    );
+                    }
+
+
         },
         handleSubCategoryChange(value) {
 
