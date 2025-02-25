@@ -69,7 +69,7 @@
                         <span>{{ $t("menu.dashboard") }}</span>
                     </a-menu-item>
 
-                    <a-menu-item
+                    <!-- <a-menu-item
                         v-if="
                             (permsArray.includes('products_view') ||
                                 permsArray.includes('admin')) &&
@@ -85,7 +85,7 @@
                     >
                         <CopyrightCircleOutlined />
                         <span>{{ $t("menu.products") }}</span>
-                    </a-menu-item>
+                    </a-menu-item> -->
                     <!-- <a-sub-menu
                         key="expense_manager"
                         v-if="
