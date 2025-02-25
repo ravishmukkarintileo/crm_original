@@ -182,7 +182,7 @@
                     </a-menu-item>
 
 
-                    <a-sub-menu
+                    <!-- <a-sub-menu
                         v-if="
                             (permsArray.includes('salesmans_view') ||
                                 permsArray.includes('admin')) &&
@@ -222,7 +222,7 @@
                             <ShoppingCartOutlined />
                             <span>{{ $t("menu.salesman_bookings") }}</span>
                         </a-menu-item>
-                    </a-sub-menu>
+                    </a-sub-menu> -->
 
                     <LeftSideBarMainHeading
                         :title="$t('menu.lead_management')"
