@@ -1,17 +1,17 @@
 {
-  "_vendor-a91b8582.js": {
+  "_vendor-7d287734.js": {
     "css": [
       "assets/vendor-ad46f743.css"
     ],
-    "file": "assets/vendor-a91b8582.js"
+    "file": "assets/vendor-7d287734.js"
   },
   "resources/js/app.css": {
-    "file": "assets/app-eba84ee8.css",
+    "file": "assets/app-e176fc8a.css",
     "src": "resources/js/app.css"
   },
   "resources/js/app.js": {
     "css": [
-      "assets/app-eba84ee8.css"
+      "assets/app-e176fc8a.css"
     ],
     "dynamicImports": [
       "resources/js/common/layouts/Admin.vue",
@@ -23,11 +23,12 @@
       "resources/js/common/layouts/Admin.vue",
       "resources/js/common/layouts/Admin.vue",
       "resources/js/common/layouts/Admin.vue",
+      "resources/js/common/layouts/Admin.vue",
       "resources/js/common/layouts/Admin.vue"
     ],
-    "file": "assets/app-4550146a.js",
+    "file": "assets/app-16a1253e.js",
     "imports": [
-      "_vendor-a91b8582.js"
+      "_vendor-7d287734.js"
     ],
     "isEntry": true,
     "src": "resources/js/app.js"
@@ -40,10 +41,10 @@
     "css": [
       "assets/Admin-14aea5fe.css"
     ],
-    "file": "assets/Admin-bb3356a6.js",
+    "file": "assets/Admin-ef1230f2.js",
     "imports": [
       "resources/js/app.js",
-      "_vendor-a91b8582.js"
+      "_vendor-7d287734.js"
     ],
     "isDynamicEntry": true,
     "src": "resources/js/common/layouts/Admin.vue"
